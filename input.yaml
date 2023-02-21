@@ -7,12 +7,12 @@ subtract$simple_subtract:
   arg2: 3
   expected: 0
   output_type: int
-divide$1:
+divide$unit_divide:
   arg1: 3
   arg2: 3
   expected: 1
   output_type: float
-divide$2:
+divide$decimal_divide:
   arg1: 4
   arg2: 8
   expected: 0.5
