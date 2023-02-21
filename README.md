@@ -1,4 +1,4 @@
-## Automated Test Generation with YAML and Python
+# Automated Test Generation with YAML and Python
 This repository provides a script for generating automated tests using a YAML input file and Python code. The script generates pytest test functions for each test case specified in the YAML file.
 
 ### Installation
