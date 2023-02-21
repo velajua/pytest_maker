@@ -1,0 +1,29 @@
+add$simple_add:
+  arg1: 2
+  arg2: 3
+  expected: 5
+subtract$simple_subtract:
+  arg1: 3
+  arg2: 3
+  expected: 0
+  output_type: int
+divide$1:
+  arg1: 3
+  arg2: 3
+  expected: 1
+  output_type: float
+divide$2:
+  arg1: 4
+  arg2: 8
+  expected: 0.5
+  output_type: float
+concat_str$simple_concat:
+  arg1: 'hello'
+  arg2: 'world'
+  expected: 'helloworld'
+  output_type: str
+concat_list$add_list:
+  arg1: [1, 2]
+  arg2: [1, 2]
+  expected: [1, 2, 1, 2]
+  output_type: List
