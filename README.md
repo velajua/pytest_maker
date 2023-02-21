@@ -9,10 +9,10 @@ pip install -r requirements.txt
 ```
 
 ### Usage
-To use the test generator, create a YAML file with test cases and pass the name of the Python module to test as a command line argument when running the test_maker.py script:
+To use the test generator, create a YAML file with test cases and pass the name of the Python module to test as a command line argument when running the pytest_maker.py script:
 
 ```python
-python test_maker.py my_module
+python pytest_maker.py my_module
 ```
 
 This will generate a test_my_module.py file with pytest test functions.
@@ -79,7 +79,7 @@ concat_list$add_list:
   output_type: List
 ```
 
-Then, running python test_maker.py my_module will generate a file test_my_module.py with the following content:
+Then, running python pytest_maker.py my_module will generate a file test_my_module.py with the following content:
 
 ```python
 import pytest
