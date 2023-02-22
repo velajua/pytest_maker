@@ -58,10 +58,6 @@ multiply$1:
   args: $1$7
   expected: 7
   outtype: int
-concat_str$1:
-  args: $'hola'$'mundo'
-  expected: 'holamundo'
-  outtype: str
 ```
 
 Then, running `python pytest_maker.py my_module` will generate a file test_my_module.py with the following content which can then be run using `pytest`:
@@ -89,10 +85,4 @@ def test_multiply_1():
     result = multiply(1, 7)
     assert isinstance(result, int)
     assert result == 7
-
-
-def test_concat_str_1():
-    result = concat_str('hola', 'mundo')
-    assert isinstance(result, str)
-    assert result == 'holamundo'
 ```
