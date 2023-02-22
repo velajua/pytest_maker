@@ -7,25 +7,23 @@ from typing import *
 
 
 def generate_test_cases(module_name):
-    if not os.path.isfile('input.yaml'):
-        print('Error: input.yaml not found in folder.')
+    if not os.path.isfile(f"{module_name}.py"):
+        print(f"{module_name}.py does not exist.")
         return
 
-    module_spec = importlib.util.find_spec(module_name)
-    if module_spec is None:
-        print(f'Error: {module_name} module not found.')
+    if not os.path.isfile("input.yaml"):
+        print("input.yaml does not exist.")
         return
 
+    with open('input.yaml', 'r') as f:
+        data = yaml.safe_load(f)
     module = importlib.import_module(module_name)
 
     test_cases = []
-    with open('input.yaml', 'r') as f:
-        data = yaml.safe_load(f)
-
     for test_name, test_data in data.items():
         func_name, val = test_name.split("$")
         func = getattr(module, func_name)
-        args = [test_data[arg_name] for arg_name in test_data if arg_name.startswith('arg')]
+        args = [test_data["args"].replace("$", ", ")[2:]]
         expected = test_data['expected']
         output_type = test_data.get('outtype', None)
         test_cases.append((func, args, expected, output_type, val))
@@ -35,7 +33,7 @@ def generate_test_cases(module_name):
         f.write('from typing import *\n')
         f.write(f'from {module_name} import *\n\n\n')
         for i, (func, args, expected, output_type, val) in enumerate(test_cases):
-            arg_list = ', '.join(map(repr, args))
+            arg_list = args[0]
             f.write(f'def test_{func.__name__}_{val}():\n')
             f.write(f'    result = {func.__name__}({arg_list})\n')
             if output_type:
