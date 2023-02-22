@@ -93,7 +93,7 @@ multiply$1:
   outtype: int
 ```
 
-Then, running `python pytest_maker.py my_module` will generate a file test_my_module.py with the following content which can then be run using the `pytest` library:
+Then, running `python pytest_maker.py my_module` will generate a file test_my_module.py with the following content which then prompts the user to run the tests created or it can be run using the `pytest` library:
 
 ```python
 import pytest
