@@ -27,7 +27,7 @@ def generate_test_cases(module_name):
             arg_list = ', '.join(map(repr, args))
             f.write(f'def test_{func.__name__}_{val}():\n')
             f.write(f'    result = {func.__name__}({arg_list})\n')
-            if output_type:
+            if outtype:
                 f.write(f'    assert isinstance(result, {output_type})\n')
             f.write(f'    assert result == {repr(expected)}')
             f.write("\n" if i == len(test_cases)-1 else "\n\n\n")
