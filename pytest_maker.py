@@ -1,15 +1,27 @@
-import importlib
+import os
 import sys
 import yaml
+import importlib
 
 from typing import *
 
+
 def generate_test_cases(module_name):
-    with open('input.yaml', 'r') as f:
-        data = yaml.safe_load(f)
+    if not os.path.isfile('input.yaml'):
+        print('Error: input.yaml not found in folder.')
+        return
+
+    module_spec = importlib.util.find_spec(module_name)
+    if module_spec is None:
+        print(f'Error: {module_name} module not found.')
+        return
+
     module = importlib.import_module(module_name)
 
     test_cases = []
+    with open('input.yaml', 'r') as f:
+        data = yaml.safe_load(f)
+
     for test_name, test_data in data.items():
         func_name, val = test_name.split("$")
         func = getattr(module, func_name)
