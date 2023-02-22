@@ -89,4 +89,10 @@ def test_multiply_1():
     result = multiply(1, 7)
     assert isinstance(result, int)
     assert result == 7
+
+
+def test_concat_str_1():
+    result = concat_str('hola', 'mundo')
+    assert isinstance(result, str)
+    assert result == 'holamundo'
 ```
