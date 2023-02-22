@@ -54,13 +54,13 @@ function_name$test_name:
 
 Where:
 
-`function_name` is the name of the function to be tested
-`test_name` is a unique identifier for the test case
-`args` is a string that represents the arguments to be passed to the function, separated by a dollar sign ($)
-`expected` is the expected output of the function for the given arguments
-`outtype` (optional) is the expected output data type
-`skip` (optional) is a message to skip the test
-`fail` (optional) is a message to indicate the test has failed
+`function_name` is the name of the function to be tested.
+`test_name` is a unique identifier for the test case.
+`args` is a string that represents the arguments to be passed to the function, separated by a dollar sign ($).
+`expected` is the expected output of the function for the given arguments.
+`outtype` (optional) is the expected output data type.
+`skip` (optional) is a message to skip the test.
+`fail` (optional) is a message to indicate the test has failed.
 Note: only one of skip or fail can be used per test case.
 
 Here's an example input.yaml file:
