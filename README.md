@@ -27,6 +27,9 @@ def add(x, y):
 def subtract(x, y):
     return x - y
 
+def multiply(x, y):
+    return x * y
+
 def divide(x, y):
     return x / y
 
@@ -55,11 +58,11 @@ subtract$simple_subtract:
   expected: 0
   output_type: int
 
-concat_list$add_list:
-  arg1: [1, 2]
-  arg2: [1, 2]
-  expected: [1, 2, 1, 2]
-  output_type: List
+multiply$1:
+  arg1: 1
+  arg2: 7
+  expected: 7
+  output_type: int
 ```
 
 Then, running python pytest_maker.py my_module will generate a file test_my_module.py with the following content:
@@ -83,8 +86,8 @@ def test_subtract_simple_subtract():
     assert result == 0
 
 
-def test_concat_list_add_list():
-    result = concat_list([1, 2], [1, 2])
-    assert isinstance(result, List)
-    assert result == [1, 2, 1, 2]
+def test_multiply_1():
+    result = multiply(1, 7)
+    assert isinstance(result, int)
+    assert result == 7
 ```
