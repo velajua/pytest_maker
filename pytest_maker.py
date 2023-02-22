@@ -25,19 +25,29 @@ def generate_test_cases(module_name):
         func = getattr(module, func_name)
         args = [test_data["args"].replace("$", ", ")[2:]]
         expected = test_data['expected']
-        output_type = test_data.get('outtype', None)
-        test_cases.append((func, args, expected, output_type, val))
+        outtype = test_data.get('outtype', None)
+        skip = test_data.get('skip', None)
+        fail = test_data.get('fail', None)
+        test_cases.append((
+            func, args, expected, outtype, skip, fail, val))
 
     with open(f'test_{module_name}.py', 'w') as f:
         f.write(f'import pytest\n\n')
         f.write('from typing import *\n')
         f.write(f'from {module_name} import *\n\n\n')
-        for i, (func, args, expected, output_type, val) in enumerate(test_cases):
+        for i, (func, args, expected, outtype, skip, fail,
+                val) in enumerate(test_cases):
             arg_list = args[0]
+            if skip:
+                f.write('@pytest.mark.skip(\n')
+                f.write(f'    reason="{skip}")\n')
+            if fail:
+                f.write(f'@pytest.mark.xfail(\n')
+                f.write(f'    reason="{fail}")\n')
             f.write(f'def test_{func.__name__}_{val}():\n')
             f.write(f'    result = {func.__name__}({arg_list})\n')
-            if output_type:
-                f.write(f'    assert isinstance(result, {output_type})\n')
+            if outtype:
+                f.write(f'    assert isinstance(result, {outtype})\n')
             f.write(f'    assert result == {repr(expected)}')
             f.write("\n" if i == len(test_cases)-1 else "\n\n\n")
 
