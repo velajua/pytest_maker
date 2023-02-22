@@ -1,9 +1,8 @@
+import importlib
 import sys
 import yaml
-import importlib
 
 from typing import *
-
 
 def generate_test_cases(module_name):
     with open('input.yaml', 'r') as f:
@@ -16,7 +15,7 @@ def generate_test_cases(module_name):
         func = getattr(module, func_name)
         args = [test_data[arg_name] for arg_name in test_data if arg_name.startswith('arg')]
         expected = test_data['expected']
-        output_type = test_data.get('output_type', None)
+        output_type = test_data.get('outtype', None)
         test_cases.append((func, args, expected, output_type, val))
 
     with open(f'test_{module_name}.py', 'w') as f:
@@ -27,7 +26,7 @@ def generate_test_cases(module_name):
             arg_list = ', '.join(map(repr, args))
             f.write(f'def test_{func.__name__}_{val}():\n')
             f.write(f'    result = {func.__name__}({arg_list})\n')
-            if outtype:
+            if output_type:
                 f.write(f'    assert isinstance(result, {output_type})\n')
             f.write(f'    assert result == {repr(expected)}')
             f.write("\n" if i == len(test_cases)-1 else "\n\n\n")
