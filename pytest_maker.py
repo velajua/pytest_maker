@@ -60,3 +60,13 @@ if __name__ == '__main__':
         help='Name of the module to generate test cases for')
     args = parser.parse_args()
     generate_test_cases(args.module_name)
+    while True:
+        run_pytest = input("Do you want to run pytest? (y/n/all) ")
+        if run_pytest.lower() in ['y', 'n', 'all']:
+            break
+        print("Invalid input. Please enter 'y', 'n', or 'all'.")
+
+    if run_pytest.lower() == 'y':
+        os.system(f"pytest test_{args.module_name}.py")
+    elif run_pytest.lower() == 'all':
+        os.system(f"pytest")
