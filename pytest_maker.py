@@ -1,12 +1,22 @@
 import os
 import yaml
-import importlib
 import argparse
+import importlib
 
-from typing import *
+from typing import Any, List, Tuple, Union
 
 
-def generate_test_cases(module_name):
+def generate_test_cases(module_name: str) -> None:
+    """
+    Generates pytest test cases from pytest_input.yaml
+    for the given module.
+
+    Args:
+    module_name: Name of the module to generate test cases for.
+
+    Returns:
+    None.
+    """
     if not os.path.isfile(f"{module_name}.py"):
         print(f"{module_name}.py does not exist.")
         return
@@ -19,7 +29,8 @@ def generate_test_cases(module_name):
         data = yaml.safe_load(f)
     module = importlib.import_module(module_name)
 
-    test_cases = []
+    test_cases: List[Tuple[Any, List[str], Any, Union[type, None],
+                           Union[str, None], Union[str, None], str]] = []
     for test_name, test_data in data.items():
         func_name, val = test_name.split("$")
         func = getattr(module, func_name)
@@ -44,7 +55,7 @@ def generate_test_cases(module_name):
             if fail:
                 f.write('@pytest.mark.xfail(\n')
                 f.write(f'    reason="{fail}")\n')
-            f.write(f'def test_{func.__name__}_{val}():\n')
+            f.write(f'def test_{func.__name__}_{val}() -> None:\n')
             f.write(f'    result = {func.__name__}({arg_list})\n')
             if outtype:
                 f.write(f'    assert isinstance(result, {outtype})\n')
@@ -59,7 +70,7 @@ def generate_test_cases(module_name):
     if run_pytest.lower() == 'y':
         os.system(f"pytest test_{module_name}.py")
     elif run_pytest.lower() == 'all':
-        os.system(f"pytest")
+        os.system("pytest")
 
 
 if __name__ == '__main__':
