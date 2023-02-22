@@ -11,11 +11,11 @@ def generate_test_cases(module_name):
         print(f"{module_name}.py does not exist.")
         return
 
-    if not os.path.isfile("input.yaml"):
-        print("input.yaml does not exist.")
+    if not os.path.isfile("pytest_input.yaml"):
+        print("pytest_input.yaml does not exist.")
         return
 
-    with open('input.yaml', 'r') as f:
+    with open('pytest_input.yaml', 'r') as f:
         data = yaml.safe_load(f)
     module = importlib.import_module(module_name)
 
@@ -50,16 +50,6 @@ def generate_test_cases(module_name):
                 f.write(f'    assert isinstance(result, {outtype})\n')
             f.write(f'    assert result == {repr(expected)}')
             f.write("\n" if i == len(test_cases)-1 else "\n\n\n")
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Generate pytest test cases from input.yaml')
-    parser.add_argument(
-        'module_name', type=str,
-        help='Name of the module to generate test cases for')
-    args = parser.parse_args()
-    generate_test_cases(args.module_name)
     while True:
         run_pytest = input("Do you want to run pytest? (y/n/all) ")
         if run_pytest.lower() in ['y', 'n', 'all']:
@@ -67,6 +57,16 @@ if __name__ == '__main__':
         print("Invalid input. Please enter 'y', 'n', or 'all'.")
 
     if run_pytest.lower() == 'y':
-        os.system(f"pytest test_{args.module_name}.py")
+        os.system(f"pytest test_{module_name}.py")
     elif run_pytest.lower() == 'all':
         os.system(f"pytest")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Generate pytest test cases from pytest_input.yaml')
+    parser.add_argument(
+        'module_name', type=str,
+        help='Name of the module to generate test cases for')
+    args = parser.parse_args()
+    generate_test_cases(args.module_name)
