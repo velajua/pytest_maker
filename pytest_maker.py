@@ -1,5 +1,4 @@
 import os
-import sys
 import yaml
 import importlib
 import argparse
@@ -33,7 +32,7 @@ def generate_test_cases(module_name):
             func, args, expected, outtype, skip, fail, val))
 
     with open(f'test_{module_name}.py', 'w') as f:
-        f.write(f'import pytest\n\n')
+        f.write('import pytest\n\n')
         f.write('from typing import *\n')
         f.write(f'from {module_name} import *\n\n\n')
         for i, (func, args, expected, outtype, skip, fail,
@@ -43,7 +42,7 @@ def generate_test_cases(module_name):
                 f.write('@pytest.mark.skip(\n')
                 f.write(f'    reason="{skip}")\n')
             if fail:
-                f.write(f'@pytest.mark.xfail(\n')
+                f.write('@pytest.mark.xfail(\n')
                 f.write(f'    reason="{fail}")\n')
             f.write(f'def test_{func.__name__}_{val}():\n')
             f.write(f'    result = {func.__name__}({arg_list})\n')
@@ -54,7 +53,10 @@ def generate_test_cases(module_name):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Generate pytest test cases from input.yaml')
-    parser.add_argument('module_name', type=str, help='Name of the module to generate test cases for')
+    parser = argparse.ArgumentParser(
+        description='Generate pytest test cases from input.yaml')
+    parser.add_argument(
+        'module_name', type=str,
+        help='Name of the module to generate test cases for')
     args = parser.parse_args()
     generate_test_cases(args.module_name)
