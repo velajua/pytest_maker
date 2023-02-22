@@ -47,6 +47,7 @@ add$simple_add:
   arg1: 2
   arg2: 3
   expected: 5
+  output_type: int
 
 subtract$simple_subtract:
   arg1: 3
@@ -72,6 +73,7 @@ from my_module import *
 
 def test_add_simple_add():
     result = add(2, 3)
+    assert isinstance(result, int)
     assert result == 5
 
 
