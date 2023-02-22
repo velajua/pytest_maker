@@ -9,6 +9,17 @@ pip install -r requirements.txt
 ```
 
 ### Usage
+
+```python
+Generate pytest test cases from input.yaml
+
+positional arguments:
+  module_name  Name of the module to generate test cases for
+
+optional arguments:
+  -h, --help   show this help message and exit
+```
+
 To use the test generator, create a YAML file with test cases and pass the name of the Python module to test as a command line argument when running the `pytest_maker.py` script:
 
 ```python
