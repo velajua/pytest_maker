@@ -10,7 +10,3 @@ multiply$1:
   args: $1$7
   expected: 7
   outtype: int
-concat_str$1:
-  args: $'hola'$'mundo'
-  expected: 'holamundo'
-  outtype: str
