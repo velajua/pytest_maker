@@ -47,22 +47,21 @@ Here's an example input.yaml file:
 
 ```yaml
 add$simple_add:
-  arg1: 2
-  arg2: 3
+  args: $2$3
   expected: 5
   outtype: int
-
 subtract$simple_subtract:
-  arg1: 3
-  arg2: 3
+  args: $3$3
   expected: 0
   outtype: int
-
 multiply$1:
-  arg1: 1
-  arg2: 7
+  args: $1$7
   expected: 7
   outtype: int
+concat_str$1:
+  args: $'hola'$'mundo'
+  expected: 'holamundo'
+  outtype: str
 ```
 
 Then, running `python pytest_maker.py my_module` will generate a file test_my_module.py with the following content which can then be run using `pytest`:
