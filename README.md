@@ -104,13 +104,13 @@ from my_module import *
 
 @pytest.mark.skip(
     reason="The function should be skipped")
-def test_add_simple_add():
+def test_add_simple_add() -> None:
     result = add(2, 3)
     assert isinstance(result, int)
     assert result == 5
 
 
-def test_subtract_simple_subtract():
+def test_subtract_simple_subtract() -> None:
     result = subtract(3, 3)
     assert isinstance(result, int)
     assert result == 0
@@ -118,7 +118,7 @@ def test_subtract_simple_subtract():
 
 @pytest.mark.xfail(
     reason="The value is not true")
-def test_multiply_1():
+def test_multiply_1() -> None:
     result = multiply(1, 7)
     assert isinstance(result, int)
     assert result == 8
