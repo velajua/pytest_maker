@@ -50,19 +50,19 @@ add$simple_add:
   arg1: 2
   arg2: 3
   expected: 5
-  output_type: int
+  outtype: int
 
 subtract$simple_subtract:
   arg1: 3
   arg2: 3
   expected: 0
-  output_type: int
+  outtype: int
 
 multiply$1:
   arg1: 1
   arg2: 7
   expected: 7
-  output_type: int
+  outtype: int
 ```
 
 Then, running python pytest_maker.py my_module will generate a file test_my_module.py with the following content:
