@@ -2,6 +2,7 @@ import os
 import sys
 import yaml
 import importlib
+import argparse
 
 from typing import *
 
@@ -53,5 +54,7 @@ def generate_test_cases(module_name):
 
 
 if __name__ == '__main__':
-    module_name = sys.argv[1]
-    generate_test_cases(module_name)
+    parser = argparse.ArgumentParser(description='Generate pytest test cases from input.yaml')
+    parser.add_argument('module_name', type=str, help='Name of the module to generate test cases for')
+    args = parser.parse_args()
+    generate_test_cases(args.module_name)
