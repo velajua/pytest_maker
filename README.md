@@ -9,16 +9,16 @@ pip install -r requirements.txt
 ```
 
 ### Usage
-To use the test generator, create a YAML file with test cases and pass the name of the Python module to test as a command line argument when running the pytest_maker.py script:
+To use the test generator, create a YAML file with test cases and pass the name of the Python module to test as a command line argument when running the `pytest_maker.py` script:
 
 ```python
 python pytest_maker.py my_module
 ```
 
-This will generate a test_my_module.py file with pytest test functions.
+This will generate a `test_my_module.py` file with pytest test functions.
 
 ### Example
-As an example, let's say we have a module called my_module with the following functions:
+As an example, let's say we have a module called `my_module.py` with the following functions:
 
 ```python
 def add(x, y):
@@ -41,7 +41,7 @@ def concat_list(a, b):
 ```
 
 ### YAML Input File
-The YAML input file should contain a dictionary with one key-value pair per test case. The key should be of the format function_name$test_case_name, where function_name is the name of the Python function to test and test_case_name is a descriptive name for the test case. The value should be a dictionary with keys beginning with "arg" representing the arguments to pass to the function and a "expected" key representing the expected output of the function. An optional "output_type" key can be used to specify the type of the expected output.
+The YAML input file should contain a dictionary with one key-value pair per test case. The key should be of the format <function_name>$<test_case_name>, where <function_name> is the name of the Python function to test and <test_case_name> is a descriptive name for the test case. The value should be a dictionary with keys beginning with "arg" representing the arguments to pass to the function and a "expected" key representing the expected output of the function. An optional "output_type" key can be used to specify the type of the expected output.
 
 Here's an example input.yaml file:
 
@@ -65,7 +65,7 @@ multiply$1:
   outtype: int
 ```
 
-Then, running python pytest_maker.py my_module will generate a file test_my_module.py with the following content:
+Then, running `python pytest_maker.py my_module` will generate a file test_my_module.py with the following content which can then be run using `pytest`:
 
 ```python
 import pytest
