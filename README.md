@@ -54,24 +54,6 @@ subtract$simple_subtract:
   expected: 0
   output_type: int
 
-divide$unit_divide:
-  arg1: 3
-  arg2: 3
-  expected: 1
-  output_type: float
-
-divide$decimal_divide:
-  arg1: 4
-  arg2: 8
-  expected: 0.5
-  output_type: float
-
-concat_str$simple_concat:
-  arg1: 'hello'
-  arg2: 'world'
-  expected: 'helloworld'
-  output_type: str
-
 concat_list$add_list:
   arg1: [1, 2]
   arg2: [1, 2]
@@ -97,24 +79,6 @@ def test_subtract_simple_subtract():
     result = subtract(3, 3)
     assert isinstance(result, int)
     assert result == 0
-
-
-def test_divide_unit_divide():
-    result = divide(3, 3)
-    assert isinstance(result, float)
-    assert result == 1
-
-
-def test_divide_decimal_divide():
-    result = divide(4, 8)
-    assert isinstance(result, float)
-    assert result == 0.5
-
-
-def test_concat_str_simple_concat():
-    result = concat_str('hello', 'world')
-    assert isinstance(result, str)
-    assert result == 'helloworld'
 
 
 def test_concat_list_add_list():
