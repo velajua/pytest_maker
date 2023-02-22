@@ -47,6 +47,7 @@ Here's an example input.yaml file:
 
 ```yaml
 add$simple_add:
+  skip: 'The function should be skipped'
   args: $2$3
   expected: 5
   outtype: int
@@ -55,8 +56,9 @@ subtract$simple_subtract:
   expected: 0
   outtype: int
 multiply$1:
+  fail: 'The value is not true'
   args: $1$7
-  expected: 7
+  expected: 8
   outtype: int
 ```
 
