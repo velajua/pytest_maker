@@ -1,9 +1,39 @@
 import os
+import ast
 import yaml
 import argparse
 import importlib
 
 from typing import Any, List, Tuple, Union
+
+
+def print_imports(module_name: str) -> str:
+    """
+    Reads a Python module from a file and returns a string containing
+    all the import statements found in the module.
+
+    Args:
+        module_name (str): The name of the module to be read.
+
+    Returns:
+        str: A string containing all the import statements found in
+            the module.
+    """
+    with open(f'{module_name}.py', 'r') as f:
+        source = f.read()
+
+    imports = []
+    for node in ast.iter_child_nodes(ast.parse(source)):
+        if isinstance(node, ast.Import):
+            for name in node.names:
+                imports.append(f"import {name.name}")
+        elif isinstance(node, ast.ImportFrom):
+            for name in node.names:
+                if not node.module == 'typing':
+                    imports.append(f"""from {node.module} import {
+                        name.name + f'as {name.asname}'
+                        if name.asname else name.name}""")
+    return '\n'.join(imports)
 
 
 def generate_test_cases(module_name: str) -> None:
@@ -27,6 +57,7 @@ def generate_test_cases(module_name: str) -> None:
 
     with open('pytest_input.yaml', 'r') as f:
         data = yaml.safe_load(f)
+
     module = importlib.import_module(module_name)
 
     test_cases: List[Tuple[Any, List[str], Any, Union[type, None],
@@ -35,19 +66,31 @@ def generate_test_cases(module_name: str) -> None:
         func_name, val = test_name.split("$")
         func = getattr(module, func_name)
         args = [test_data["args"].replace("$", ", ")[2:]]
-        expected = test_data['expected']
+        equals = test_data.get('equals', None)
+        eval_equals = test_data.get('eval_equals', None)
+        eval_less = test_data.get('eval_less', None)
+        eval_lessoe = test_data.get('eval_lessoe', None)
+        eval_more = test_data.get('eval_more', None)
+        eval_moreoe = test_data.get('eval_moreoe', None)
+        less = test_data.get('less', None)
+        lessoe = test_data.get('lessoe', None)
+        more = test_data.get('more', None)
+        moreoe = test_data.get('moreoe', None)
         outtype = test_data.get('outtype', None)
         skip = test_data.get('skip', None)
         fail = test_data.get('fail', None)
         test_cases.append((
-            func, args, expected, outtype, skip, fail, val))
+            func, args, equals, eval_equals, eval_less, eval_lessoe, eval_more,
+            eval_moreoe, less, lessoe, more, moreoe, outtype, skip, fail, val))
 
     with open(f'test_{module_name}.py', 'w') as f:
-        f.write('import pytest\n\n')
+        f.write('import pytest\n')
+        f.write(print_imports(module_name) + '\n\n')
         f.write('from typing import *\n')
         f.write(f'from {module_name} import *\n\n\n')
-        for i, (func, args, expected, outtype, skip, fail,
-                val) in enumerate(test_cases):
+        for i, (func, args, equals, eval_equals, eval_less, eval_lessoe, eval_more,
+            eval_moreoe, less, lessoe, more, moreoe, outtype, skip, fail, val
+                ) in enumerate(test_cases):
             arg_list = args[0]
             if skip:
                 f.write('@pytest.mark.skip(\n')
@@ -59,8 +102,27 @@ def generate_test_cases(module_name: str) -> None:
             f.write(f'    result = {func.__name__}({arg_list})\n')
             if outtype:
                 f.write(f'    assert isinstance(result, {outtype})\n')
-            f.write(f'    assert result == {repr(expected)}')
-            f.write("\n" if i == len(test_cases)-1 else "\n\n\n")
+            if equals:
+                f.write(f'    assert result == {repr(equals)}\n')
+            if less:
+                f.write(f'    assert result < {repr(less)}\n')
+            if lessoe:
+                f.write(f'    assert result <= {repr(lessoe)}\n')
+            if more:
+                f.write(f'    assert result > {repr(more)}\n')
+            if moreoe:
+                f.write(f'    assert result >= {repr(moreoe)}\n')
+            if eval_equals:
+                f.write(f'    assert result == {repr(eval_equals)[1:-1]}\n')
+            if eval_less:
+                f.write(f'    assert result < {repr(eval_less)[1:-1]}\n')
+            if eval_lessoe:
+                f.write(f'    assert result <= {repr(eval_lessoe)[1:-1]}\n')
+            if eval_more:
+                f.write(f'    assert result > {repr(eval_more)[1:-1]}\n')
+            if eval_moreoe:
+                f.write(f'    assert result >= {repr(eval_moreoe)[1:-1]}\n')
+            f.write("" if i == len(test_cases)-1 else "\n\n")
     while True:
         run_pytest = input("Do you want to run pytest? (y/n/all) ")
         if run_pytest.lower() in ['y', 'n', 'all']:
