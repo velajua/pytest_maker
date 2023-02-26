@@ -62,7 +62,7 @@ The pytest_input.yaml file is used to specify the test cases that will be genera
 
 ```yaml
 function_name$test_name:
-  argument: $value1$value2...$valueN
+  args: $value1$value2...$valueN
   equals: equals_output_value
   outtype: output_type
   skip: message_to_skip
@@ -89,9 +89,28 @@ Where:
 `fail` (optional) is a message to indicate the test has failed.
 Note: only one of skip or fail can be used per test case.
 
+It can also take the following format:
+
+```yaml
+fixture$test_name:
+  args: $value_to_return
+```
+
+to create custom fixtures:
+```python
+@pytest.fixture
+def test_fixture_test_name():
+    return value_to_return
+```
+
+
 Here's an example pytest_input.yaml file:
 
 ```yaml
+fixture$1:
+  args: $['555']$['666']
+fixture$2:
+  args: $5
 add$simple_add:
   skip: 'The function should be skipped'
   args: $2$3
@@ -114,16 +133,17 @@ pi_multiply$pi_times_5:
   eval_lessoe: 'pi*10'
   outtype: float
 pi_multiply$pi_times_math:
-  args: $5
+  args: $fixture_2
   eval_moreoe: 'randint(1, 4)'
   eval_lessoe: 'pi*sin(90)*20'
   outtype: float
 concat_list$list:
+  timeout: 3
   args: $[1]$[2]
   equals: [1, 2]
   outtype: List
 concat_list$str:
-  args: $['555']$['666']
+  args: $fixture_1*
   equals: ['555', '666']
   outtype: List
 ```
@@ -139,6 +159,14 @@ from random import randint
 from typing import *
 from boom import *
 
+
+@pytest.fixture
+def test_fixture_1():
+    return ['555'], ['666']
+
+@pytest.fixture
+def test_fixture_2():
+    return 5
 
 @pytest.mark.skip(
     reason="The function should be skipped")
@@ -170,21 +198,22 @@ def test_pi_multiply_pi_times_5() -> None:
     assert result <= pi*10
 
 
-def test_pi_multiply_pi_times_math() -> None:
-    result = pi_multiply(5)
+def test_pi_multiply_pi_times_math(test_fixture_2) -> None:
+    result = pi_multiply(test_fixture_2)
     assert isinstance(result, float)
     assert result <= pi*sin(90)*20
     assert result >= randint(1, 4)
 
 
+@pytest.mark.timeout(3)
 def test_concat_list_list() -> None:
     result = concat_list([1], [2])
     assert isinstance(result, List)
     assert result == [1, 2]
 
 
-def test_concat_list_str() -> None:
-    result = concat_list(['555'], ['666'])
+def test_concat_list_str(test_fixture_1) -> None:
+    result = concat_list(*test_fixture_1)
     assert isinstance(result, List)
     assert result == ['555', '666']
 
