@@ -32,6 +32,9 @@ This will generate a `test_my_module.py` file with pytest test functions.
 As an example, let's say we have a module called `my_module.py` with the following functions:
 
 ```python
+from math import pi, sin
+from random import randint
+
 def add(x, y):
     return x + y
 
@@ -49,6 +52,9 @@ def concat_str(a, b):
 
 def concat_list(a, b):
     return a + b
+
+def pi_multiply(a):
+    return pi * a
 ```
 
 ### YAML Input File
@@ -57,7 +63,7 @@ The pytest_input.yaml file is used to specify the test cases that will be genera
 ```yaml
 function_name$test_name:
   argument: $value1$value2...$valueN
-  expected: expected_output_value
+  equals: equals_output_value
   outtype: output_type
   skip: message_to_skip
   fail: message_to_fail
@@ -68,7 +74,16 @@ Where:
 `function_name` is the name of the function to be tested.
 `test_name` is a unique identifier for the test case.
 `args` is a string that represents the arguments to be passed to the function, separated by a dollar sign ($).
-`expected` is the expected output of the function for the given arguments.
+`equals` is the '==' output of the function for the given arguments.
+`more` is the '>' output of the function for the given arguments.
+`moreoe` is the '>=' output of the function for the given arguments.
+`less` is the '<' output of the function for the given arguments.
+`lessoe` is the '<=' output of the function for the given arguments.
+`eval_equals` is the '==' of the eval(output) of the function for the given arguments.
+`eval_more` is the '>' eval(output) of the function for the given arguments.
+`eval_moreoe` is the '>=' eval(output) of the function for the given arguments.
+`eval_less` is the '<' eval(output) of the function for the given arguments.
+`eval_lessoe` is the '<=' eval(output) of the function for the given arguments.
 `outtype` (optional) is the expected output data type.
 `skip` (optional) is a message to skip the test.
 `fail` (optional) is a message to indicate the test has failed.
@@ -80,26 +95,49 @@ Here's an example pytest_input.yaml file:
 add$simple_add:
   skip: 'The function should be skipped'
   args: $2$3
-  expected: 5
+  equals: 5
   outtype: int
 subtract$simple_subtract:
   args: $3$3
-  expected: 0
+  equals: 0
+  less: 7
   outtype: int
-multiply$1:
+multiply$1_to_7:
   fail: 'The value is not true'
   args: $1$7
-  expected: 8
+  equals: 8
+  more: 6
   outtype: int
+pi_multiply$pi_times_5:
+  args: $5
+  eval_equals: 'pi*5'
+  eval_lessoe: 'pi*10'
+  outtype: float
+pi_multiply$pi_times_math:
+  args: $5
+  eval_moreoe: 'randint(1, 4)'
+  eval_lessoe: 'pi*sin(90)*20'
+  outtype: float
+concat_list$list:
+  args: $[1]$[2]
+  equals: [1, 2]
+  outtype: List
+concat_list$str:
+  args: $['555']$['666']
+  equals: ['555', '666']
+  outtype: List
 ```
 
 Then, running `python pytest_maker.py my_module` will generate a file test_my_module.py with the following content which then prompts the user to run the tests created or it can be run using the `pytest` library:
 
 ```python
 import pytest
+from math import pi
+from math import sin
+from random import randint
 
 from typing import *
-from my_module import *
+from boom import *
 
 
 @pytest.mark.skip(
@@ -113,13 +151,41 @@ def test_add_simple_add() -> None:
 def test_subtract_simple_subtract() -> None:
     result = subtract(3, 3)
     assert isinstance(result, int)
-    assert result == 0
+    assert result < 7
 
 
 @pytest.mark.xfail(
     reason="The value is not true")
-def test_multiply_1() -> None:
+def test_multiply_1_to_7() -> None:
     result = multiply(1, 7)
     assert isinstance(result, int)
     assert result == 8
+    assert result > 6
+
+
+def test_pi_multiply_pi_times_5() -> None:
+    result = pi_multiply(5)
+    assert isinstance(result, float)
+    assert result == pi*5
+    assert result <= pi*10
+
+
+def test_pi_multiply_pi_times_math() -> None:
+    result = pi_multiply(5)
+    assert isinstance(result, float)
+    assert result <= pi*sin(90)*20
+    assert result >= randint(1, 4)
+
+
+def test_concat_list_list() -> None:
+    result = concat_list([1], [2])
+    assert isinstance(result, List)
+    assert result == [1, 2]
+
+
+def test_concat_list_str() -> None:
+    result = concat_list(['555'], ['666'])
+    assert isinstance(result, List)
+    assert result == ['555', '666']
+
 ```
