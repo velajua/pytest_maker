@@ -36,7 +36,7 @@ def print_imports(module_name: str) -> str:
     return '\n'.join(imports)
 
 
-def generate_test_cases(module_name: str) -> None:
+def generate_test_cases(module_name: str, partly: bool = False) -> None:
     """
     Generates pytest test cases from pytest_input.yaml
     for the given module.
@@ -51,8 +51,22 @@ def generate_test_cases(module_name: str) -> None:
         print(f"{module_name}.py does not exist.")
         return
 
-    if not os.path.isfile("pytest_input.yaml"):
+    if not os.path.isfile("pytest_input.yaml") and not partly:
         print("pytest_input.yaml does not exist.")
+        return
+
+    if partly:
+        with open(f'{module_name}.py', 'r') as f:
+            source = f.read()
+        with open(f'test_{module_name}.py', 'w') as f:
+            f.write('import pytest\n')
+            f.write(print_imports(module_name) + '\n\n')
+            f.write('from typing import *\n')
+            f.write(f'from {module_name} import *\n\n\n')
+            for node in ast.iter_child_nodes(ast.parse(source)):
+                if isinstance(node, ast.FunctionDef):
+                    f.write(f"def test_{node.name}():\n")
+                    f.write("    pass\n\n")
         return
 
     with open('pytest_input.yaml', 'r') as f:
@@ -72,7 +86,8 @@ def generate_test_cases(module_name: str) -> None:
         else:
             print(test_name)
             return
-        args = [test_data.get("args", '').replace("$", ", ")[2:] if test_data.get('args', None) else '']
+        args = [test_data.get("args", '').replace("$", ", ")[2:]
+                if test_data.get('args', None) else '']
         equals = test_data.get('equals', None)
         eval_equals = test_data.get('eval_equals', None)
         eval_less = test_data.get('eval_less', None)
@@ -88,18 +103,18 @@ def generate_test_cases(module_name: str) -> None:
         fail = test_data.get('fail', None)
         timeout = test_data.get('timeout', None)
         test_cases.append((
-            func, args, equals, eval_equals, eval_less, eval_lessoe, eval_more,
-            eval_moreoe, less, lessoe, more, moreoe, outtype, skip, fail, timeout,
-            val))
+            func, args, equals, eval_equals, eval_less, eval_lessoe,
+            eval_more, eval_moreoe, less, lessoe, more, moreoe, outtype,
+            skip, fail, timeout, val))
 
     with open(f'test_{module_name}.py', 'w') as f:
         f.write('import pytest\n')
         f.write(print_imports(module_name) + '\n\n')
         f.write('from typing import *\n')
         f.write(f'from {module_name} import *\n\n\n')
-        for i, (func, args, equals, eval_equals, eval_less, eval_lessoe, eval_more,
-            eval_moreoe, less, lessoe, more, moreoe, outtype, skip, fail, timeout, 
-                val) in enumerate(test_cases):
+        for i, (func, args, equals, eval_equals, eval_less, eval_lessoe,
+                eval_more, eval_moreoe, less, lessoe, more, moreoe, outtype,
+                skip, fail, timeout, val) in enumerate(test_cases):
             arg_list = args[0]
             if skip:
                 f.write('@pytest.mark.skip(\n')
@@ -110,12 +125,19 @@ def generate_test_cases(module_name: str) -> None:
             elif timeout:
                 f.write(f'@pytest.mark.timeout({timeout})\n')
             if 'fixture' not in func.__name__:
-                f.write(f'def test_{func.__name__}_{val}() -> None:\n' if 'fixture' not in arg_list
-                        else f'def test_{func.__name__}_{val}(test_{arg_list}) -> None:\n' if arg_list[-1] != '*' else
-                        f'def test_{func.__name__}_{val}(test_{arg_list[:-1]}) -> None:\n')
-                f.write(f'    result = {func.__name__}({arg_list})\n' if 'fixture' not in arg_list
-                        else f'    result = {func.__name__}(test_{arg_list})\n' if arg_list[-1] != '*' else
-                        f'    result = {func.__name__}(*test_{arg_list[:-1]})\n')
+                f.write(f'def test_{func.__name__}_{val}() -> None:\n'
+                        if 'fixture' not in arg_list else
+                        f'''def test_{func.__name__
+                        }_{val}(test_{arg_list}) -> None:\n'''
+                        if arg_list[-1] != '*' else
+                        f'''def test_{func.__name__}_{val
+                        }(test_{arg_list[:-1]}) -> None:\n''')
+                f.write(f'    result = {func.__name__}({arg_list})\n'
+                        if 'fixture' not in arg_list
+                        else f'    result = {func.__name__}(test_{arg_list})\n'
+                        if arg_list[-1] != '*' else
+                        f'''    result = {func.__name__
+                        }(*test_{arg_list[:-1]})\n''')
                 if outtype:
                     f.write(f'    assert isinstance(result, {outtype})\n')
                 if equals:
@@ -129,21 +151,24 @@ def generate_test_cases(module_name: str) -> None:
                 if moreoe:
                     f.write(f'    assert result >= {repr(moreoe)}\n')
                 if eval_equals:
-                    f.write(f'    assert result == {repr(eval_equals)[1:-1]}\n')
+                    f.write(
+                        f'    assert result == {repr(eval_equals)[1:-1]}\n')
                 if eval_less:
                     f.write(f'    assert result < {repr(eval_less)[1:-1]}\n')
                 if eval_lessoe:
-                    f.write(f'    assert result <= {repr(eval_lessoe)[1:-1]}\n')
+                    f.write(
+                        f'    assert result <= {repr(eval_lessoe)[1:-1]}\n')
                 if eval_more:
                     f.write(f'    assert result > {repr(eval_more)[1:-1]}\n')
                 if eval_moreoe:
-                    f.write(f'    assert result >= {repr(eval_moreoe)[1:-1]}\n')
+                    f.write(
+                        f'    assert result >= {repr(eval_moreoe)[1:-1]}\n')
                 f.write("" if i == len(test_cases)-1 else "\n\n")
             else:
-                f.write(f'@pytest.fixture\n')
+                f.write('@pytest.fixture\n')
                 f.write(f'def test_{func.__name__}_{val}():\n')
                 f.write(f'    return {arg_list}\n\n')
-                
+ 
     while True:
         run_pytest = input("Do you want to run pytest? (y/n/all) ")
         if run_pytest.lower() in ['y', 'n', 'all']:
@@ -162,5 +187,8 @@ if __name__ == '__main__':
     parser.add_argument(
         'module_name', type=str,
         help='Name of the module to generate test cases for')
+    parser.add_argument(
+        '-p', '--partly',
+        help='Initialize the pytest module without .yaml', action="store_true")
     args = parser.parse_args()
-    generate_test_cases(args.module_name)
+    generate_test_cases(args.module_name, args.partly)
