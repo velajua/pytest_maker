@@ -1,5 +1,5 @@
 # Automated Test Generation with YAML and Python
-This repository provides a script for generating a starting point for automated tests using a YAML input file and Python code. The script generates pytest test functions for each test case specified in the YAML file. Cases for skipping and failing tests can be specified.
+This repository provides a script for generating a starting point for automated tests using a YAML input file and Python code. The script generates pytest test functions for each test case specified in the YAML file or a general outline of the testing module. Cases for skipping and failing tests can be specified.
 
 ### Installation
 To use this script, you'll need to install the required dependencies:
@@ -17,13 +17,20 @@ positional arguments:
   module_name  Name of the module to generate test cases for
 
 optional arguments:
-  -h, --help   show this help message and exit
+  -h, --help      show this help message and exit
+  -p, --partly    generate the test oultine without a yaml file
 ```
 
 To use the test generator, create a YAML file with test cases and pass the name of the Python module to test as a command line argument when running the `pytest_maker.py` script:
 
 ```python
 python pytest_maker.py my_module
+```
+
+To generate the test outline:
+
+```python
+python pytest_maker.py my_module -p
 ```
 
 This will generate a `test_my_module.py` file with pytest test functions.
@@ -220,15 +227,15 @@ def test_concat_list_str(test_fixture_1) -> None:
 ```
 
 Do you want to run pytest? (y/n/all) y
-=============================================================================================== test session starts 
+===================================================================================== test session starts
 plugins: timeout-2.1.0
 collected 7 items
 
 my_module.py s.x....                                                                                                                                                                                         [100%] 
 
-===================================================================================== 5 passed, 1 skipped, 1 xfailed in 0.18s ===================================================================================== 
+===================================================================================== 5 passed, 1 skipped, 1 xfailed in 0.18s 
 
-And by passing the `-p` or `--partly` flag, the code doesn´t take into account the `.yaml` file. Returning:
+And by passing the `-p` or `--partly` flag, the code doesn´t take into account the `.yaml` file. Returning the test module as follows:
 
 ```python
 import pytest
@@ -261,5 +268,3 @@ def test_concat_list():
 def test_pi_multiply():
     pass
 ```
-
-
