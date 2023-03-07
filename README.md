@@ -235,7 +235,7 @@ my_module.py s.x....                                                            
 
 ===================================================================================== 5 passed, 1 skipped, 1 xfailed in 0.18s 
 
-And by passing the `-p` or `--partly` flag, the code doesn´t take into account the `.yaml` file. Returning the test module as follows:
+And by passing the `-p` or `--partly` flag, the code doesn´t take into account the `.yaml` file. Returning the test module as follows by running `python pytest_maker.py my_module -p`:
 
 ```python
 import pytest
